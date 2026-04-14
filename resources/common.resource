@@ -73,12 +73,21 @@ Open Browser To Home Page
     Evaluate    $chrome_options.add_argument("--incognito")
     Create Webdriver    Chrome    options=${chrome_options}
     Set Screenshot Directory    ${SCREENSHOT_DIR}
+    Register Keyword To Run On Failure    Capture Failure Screenshot
     Go To    ${BASE_URL}
     Set Selenium Implicit Wait    ${TIMEOUT}
     Title Should Be    Automation Exercise
 
 Close Test Browser
+    Register Keyword To Run On Failure    NONE
     Close Browser
+
+Capture Failure Screenshot
+    [Documentation]    Capture screenshot with failed test case name for easier traceability in reports.
+    ${safe_test_name}=    Evaluate    __import__("re").sub(r"[^A-Za-z0-9._-]+", "_", """${TEST NAME}""").strip("_")
+    ${safe_suite_name}=    Evaluate    __import__("re").sub(r"[^A-Za-z0-9._-]+", "_", """${SUITE NAME}""").strip("_")
+    ${ts}=    Evaluate    str(int(__import__("time").time()*1000))
+    Capture Page Screenshot    ${safe_suite_name}__${safe_test_name}__${ts}.png
 
 Generate Unique Email
     [Documentation]    Generates a unique email using timestamp to avoid conflicts on re-run

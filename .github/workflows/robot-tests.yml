@@ -114,13 +114,21 @@ jobs:
             echo "</div>"
             echo "<div class='card'>"
             echo "<table>"
-            echo "<thead><tr><th>Run Timestamp (UTC)</th><th>Artifacts</th><th>Actions</th></tr></thead>"
+            echo "<thead><tr><th>Run Timestamp (UTC)</th><th>Log</th><th>Report</th><th>Output XML</th><th>Screenshots</th><th>Actions</th></tr></thead>"
             echo "<tbody>"
 
             for dir in $(ls -1 gh-pages/runs 2>/dev/null | sort -r); do
+              SHOT_COUNT=$(ls -1 "gh-pages/runs/${dir}/screenshots"/*.png 2>/dev/null | wc -l || true)
               echo "<tr>"
               echo "<td>${dir}</td>"
-              echo "<td><a href='runs/${dir}/log.html'>log.html</a> · <a href='runs/${dir}/report.html'>report.html</a> · <a href='runs/${dir}/output.xml'>output.xml</a></td>"
+              echo "<td><a href='runs/${dir}/log.html'>log.html</a></td>"
+              echo "<td><a href='runs/${dir}/report.html'>report.html</a></td>"
+              echo "<td><a href='runs/${dir}/output.xml'>output.xml</a></td>"
+              if [ "${SHOT_COUNT}" -gt 0 ]; then
+                echo "<td><a href='runs/${dir}/screenshots/'>${SHOT_COUNT} files</a></td>"
+              else
+                echo "<td>-</td>"
+              fi
               echo "<td><a href='https://github.com/${REPO}/actions/runs/${RUN_ID}'>run ${RUN_NUMBER}</a></td>"
               echo "</tr>"
             done
