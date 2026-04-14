@@ -58,6 +58,7 @@ jobs:
         env:
           RUN_ID: ${{ github.run_id }}
           RUN_NUMBER: ${{ github.run_number }}
+          REPO: ${{ github.repository }}
           COMMIT_SHA: ${{ github.sha }}
         run: |
           set -e
@@ -69,20 +70,38 @@ jobs:
 
           {
             echo "<!doctype html>"
-            echo "<html><head><meta charset='utf-8'><title>Robot Framework Reports</title></head><body>"
+            echo "<html><head><meta charset='utf-8'><title>Robot Framework Reports</title>"
+            echo "<style>"
+            echo "body { font-family: Arial, sans-serif; margin: 24px; }"
+            echo "table { border-collapse: collapse; width: 100%; margin-top: 12px; }"
+            echo "th, td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; }"
+            echo "th { background: #f6f8fa; }"
+            echo "tr:nth-child(even) { background: #fbfbfb; }"
+            echo "a { color: #0969da; text-decoration: none; }"
+            echo "a:hover { text-decoration: underline; }"
+            echo ".muted { color: #57606a; }"
+            echo "</style></head><body>"
             echo "<h1>Robot Framework Report History</h1>"
             echo "<p>All runs are stored by UTC timestamp.</p>"
-            echo "<ul>"
+            echo "<table>"
+            echo "<thead><tr><th>Run Timestamp (UTC)</th><th>Log</th><th>Report</th><th>Output XML</th><th>Actions Run</th></tr></thead>"
+            echo "<tbody>"
 
             for dir in $(ls -1 gh-pages/runs 2>/dev/null | sort -r); do
-              echo "<li><a href='runs/${dir}/log.html'>${dir}</a> - <a href='runs/${dir}/report.html'>report</a> - <a href='runs/${dir}/output.xml'>output.xml</a></li>"
+              echo "<tr>"
+              echo "<td>${dir}</td>"
+              echo "<td><a href='runs/${dir}/log.html'>log.html</a></td>"
+              echo "<td><a href='runs/${dir}/report.html'>report.html</a></td>"
+              echo "<td><a href='runs/${dir}/output.xml'>output.xml</a></td>"
+              echo "<td><a href='https://github.com/${REPO}/actions/runs/${RUN_ID}'>run ${RUN_NUMBER}</a></td>"
+              echo "</tr>"
             done
 
-            echo "</ul>"
+            echo "</tbody></table>"
             echo "<hr>"
-            echo "<p>Last update: ${TS}</p>"
-            echo "<p>Run number: ${RUN_NUMBER}, Run ID: ${RUN_ID}</p>"
-            echo "<p>Commit: ${COMMIT_SHA}</p>"
+            echo "<p class='muted'>Last update: ${TS}</p>"
+            echo "<p class='muted'>Latest run number: ${RUN_NUMBER}, Run ID: ${RUN_ID}</p>"
+            echo "<p class='muted'>Latest commit: ${COMMIT_SHA}</p>"
             echo "</body></html>"
           } > gh-pages/index.html
 
