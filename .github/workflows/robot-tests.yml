@@ -33,10 +33,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Robot Framework tests
+      - name: Run Robot Framework tests in parallel (auth + cart only)
         run: |
           mkdir -p reports
-          robot --outputdir reports tests/auth tests/cart
+          mkdir -p reports/auth reports/cart
+
+          set +e
+          robot --outputdir reports/auth tests/auth &
+          PID_AUTH=$!
+          robot --outputdir reports/cart tests/cart &
+          PID_CART=$!
+
+          wait ${PID_AUTH}
+          RC_AUTH=$?
+          wait ${PID_CART}
+          RC_CART=$?
+
+          # Merge both suite outputs into a single report set for publishing.
+          rebot --outputdir reports reports/auth/output.xml reports/cart/output.xml
+          RC_MERGE=$?
+
+          if [ ${RC_AUTH} -ne 0 ] || [ ${RC_CART} -ne 0 ] || [ ${RC_MERGE} -ne 0 ]; then
+            exit 1
+          fi
 
       - name: Upload run artifacts
         if: always()
@@ -72,36 +91,48 @@ jobs:
             echo "<!doctype html>"
             echo "<html><head><meta charset='utf-8'><title>Robot Framework Reports</title>"
             echo "<style>"
-            echo "body { font-family: Arial, sans-serif; margin: 24px; }"
-            echo "table { border-collapse: collapse; width: 100%; margin-top: 12px; }"
-            echo "th, td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; }"
-            echo "th { background: #f6f8fa; }"
-            echo "tr:nth-child(even) { background: #fbfbfb; }"
-            echo "a { color: #0969da; text-decoration: none; }"
-            echo "a:hover { text-decoration: underline; }"
-            echo ".muted { color: #57606a; }"
+            echo ":root { --border:#d0d7de; --fg:#24292f; --muted:#57606a; --bg:#f6f8fa; --accent:#0969da; --surface:#ffffff; }"
+            echo "html, body { margin:0; padding:0; background:var(--bg); color:var(--fg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; }"
+            echo ".container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }"
+            echo ".header { background: var(--surface); border:1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }"
+            echo ".title { margin:0; font-size: 22px; font-weight: 600; }"
+            echo ".subtitle { margin:8px 0 0 0; color:var(--muted); font-size:14px; }"
+            echo ".card { background: var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }"
+            echo "table { width:100%; border-collapse: collapse; font-size: 14px; }"
+            echo "thead th { background:#f6f8fa; color:#24292f; text-align:left; border-bottom:1px solid var(--border); padding:10px 12px; font-weight:600; }"
+            echo "tbody td { border-top:1px solid var(--border); padding:10px 12px; }"
+            echo "tbody tr:hover { background:#f6f8fa; }"
+            echo "a { color:var(--accent); text-decoration:none; }"
+            echo "a:hover { text-decoration:underline; }"
+            echo ".meta { margin-top: 14px; color: var(--muted); font-size: 12px; }"
+            echo ".mono { font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,monospace; }"
             echo "</style></head><body>"
-            echo "<h1>Robot Framework Report History</h1>"
-            echo "<p>All runs are stored by UTC timestamp.</p>"
+            echo "<div class='container'>"
+            echo "<div class='header'>"
+            echo "<h1 class='title'>Robot Framework Report History</h1>"
+            echo "<p class='subtitle'>Auth and Cart CI runs published to GitHub Pages with UTC timestamp history.</p>"
+            echo "</div>"
+            echo "<div class='card'>"
             echo "<table>"
-            echo "<thead><tr><th>Run Timestamp (UTC)</th><th>Log</th><th>Report</th><th>Output XML</th><th>Actions Run</th></tr></thead>"
+            echo "<thead><tr><th>Run Timestamp (UTC)</th><th>Artifacts</th><th>Actions</th></tr></thead>"
             echo "<tbody>"
 
             for dir in $(ls -1 gh-pages/runs 2>/dev/null | sort -r); do
               echo "<tr>"
               echo "<td>${dir}</td>"
-              echo "<td><a href='runs/${dir}/log.html'>log.html</a></td>"
-              echo "<td><a href='runs/${dir}/report.html'>report.html</a></td>"
-              echo "<td><a href='runs/${dir}/output.xml'>output.xml</a></td>"
+              echo "<td><a href='runs/${dir}/log.html'>log.html</a> · <a href='runs/${dir}/report.html'>report.html</a> · <a href='runs/${dir}/output.xml'>output.xml</a></td>"
               echo "<td><a href='https://github.com/${REPO}/actions/runs/${RUN_ID}'>run ${RUN_NUMBER}</a></td>"
               echo "</tr>"
             done
 
             echo "</tbody></table>"
-            echo "<hr>"
-            echo "<p class='muted'>Last update: ${TS}</p>"
-            echo "<p class='muted'>Latest run number: ${RUN_NUMBER}, Run ID: ${RUN_ID}</p>"
-            echo "<p class='muted'>Latest commit: ${COMMIT_SHA}</p>"
+            echo "</div>"
+            echo "<div class='meta'>"
+            echo "<div>Last update: <span class='mono'>${TS}</span></div>"
+            echo "<div>Latest run: <span class='mono'>#${RUN_NUMBER}</span> (ID: <span class='mono'>${RUN_ID}</span>)</div>"
+            echo "<div>Latest commit: <span class='mono'>${COMMIT_SHA}</span></div>"
+            echo "</div>"
+            echo "</div>"
             echo "</body></html>"
           } > gh-pages/index.html
 
