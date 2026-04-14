@@ -11,7 +11,6 @@ Test Teardown     Run Keywords    Cleanup Test User    AND    Close Test Browser
 
 *** Test Cases ***
 TC22 Add To Cart From Recommended Items
-    [Tags]    skip
     Execute Javascript    window.scrollTo(0, document.body.scrollHeight)
     Sleep    2s
     Wait Until Element Is Visible    ${RECOMMENDED_SECTION_HEADING}    timeout=10s

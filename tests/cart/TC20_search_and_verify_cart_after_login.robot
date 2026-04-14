@@ -14,7 +14,6 @@ Test Teardown     Run Keywords    Cleanup Test User    AND    Close Test Browser
 
 *** Test Cases ***
 TC20 Search Products And Verify Cart After Login
-    [Tags]    skip
     # Register a fresh account first
     ${unique_email}=    Generate Unique Email With Prefix    tc20_cart
     Navigate To Login Page

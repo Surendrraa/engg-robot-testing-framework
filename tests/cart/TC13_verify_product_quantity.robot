@@ -12,7 +12,6 @@ Test Teardown     Run Keywords    Cleanup Test User    AND    Close Test Browser
 
 *** Test Cases ***
 TC13 Verify Product Quantity In Cart
-    [Tags]    skip
     Go To    ${BASE_URL}/product_details/1
     Wait Until Page Contains Element    ${PRODUCT_NAME}    timeout=10s
     Set Product Quantity    4

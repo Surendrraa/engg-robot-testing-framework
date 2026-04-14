@@ -107,9 +107,16 @@ Cleanup Test User
     [Documentation]    Deletes the current account if logged in.
     ${status}=    Run Keyword And Return Status    Page Should Contain Element    ${NAV_DELETE_ACCOUNT_LINK}
     IF    ${status}
-        Click Element    ${NAV_DELETE_ACCOUNT_LINK}
-        Sleep    3s
-        Wait Until Page Contains    Account Deleted    timeout=15s
+        # CI can show ad overlays/iframes that intercept native click on top navbar links.
+        ${clicked}=    Run Keyword And Return Status    Click Element    ${NAV_DELETE_ACCOUNT_LINK}
+        IF    not ${clicked}
+            Log    Native click failed on Delete Account; trying JS click fallback.    level=WARN
+            Execute JavaScript    document.querySelector("a[href='/delete_account']").click()
+        END
+        ${deleted}=    Run Keyword And Return Status    Wait Until Page Contains    Account Deleted    timeout=15s
+        IF    not ${deleted}
+            Log    Account deletion confirmation not visible; continuing without failing teardown.    level=WARN
+        END
     ELSE
         Log    Delete Account link not found, skipping cleanup.    level=DEBUG
     END

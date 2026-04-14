@@ -12,7 +12,6 @@ Test Teardown     Run Keywords    Cleanup Test User    AND    Close Test Browser
 
 *** Test Cases ***
 TC17 Remove Products From Cart
-    [Tags]    skip
     Navigate To Products Page
     Hover Over Product And Add To Cart    1
     Click Continue Shopping In Modal
