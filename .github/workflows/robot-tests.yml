@@ -8,6 +8,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  # GitHub cron is UTC. 00:30 UTC = 06:00 IST (India Standard Time, UTC+5:30)
+  schedule:
+    - cron: "30 0 * * *"
 
 permissions:
   contents: write
@@ -33,29 +36,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Robot Framework tests in parallel (auth + cart only)
+      - name: Run Robot Framework tests with pabot (auth + cart only)
         run: |
           mkdir -p reports
-          mkdir -p reports/auth reports/cart
-
-          set +e
-          robot --outputdir reports/auth tests/auth &
-          PID_AUTH=$!
-          robot --outputdir reports/cart tests/cart &
-          PID_CART=$!
-
-          wait ${PID_AUTH}
-          RC_AUTH=$?
-          wait ${PID_CART}
-          RC_CART=$?
-
-          # Merge both suite outputs into a single report set for publishing.
-          rebot --outputdir reports reports/auth/output.xml reports/cart/output.xml
-          RC_MERGE=$?
-
-          if [ ${RC_AUTH} -ne 0 ] || [ ${RC_CART} -ne 0 ] || [ ${RC_MERGE} -ne 0 ]; then
-            exit 1
-          fi
+          pabot --processes 2 --outputdir reports tests/auth tests/cart
 
       - name: Upload run artifacts
         if: always()
