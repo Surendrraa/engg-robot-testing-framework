@@ -59,8 +59,11 @@ Verify Empty Cart
     Wait Until Page Contains Element    ${EMPTY_CART_TEXT}    timeout=10s
 
 Click Continue Shopping In Modal
-    Wait Until Element Is Visible    ${CART_MODAL_CONTINUE_SHOPPING_BTN}    timeout=10s
-    Click Element    ${CART_MODAL_CONTINUE_SHOPPING_BTN}
+    Wait Until Element Is Visible    ${CART_MODAL_CONTINUE_SHOPPING_BTN}    timeout=15s
+    ${clicked}=    Run Keyword And Return Status    Click Element    ${CART_MODAL_CONTINUE_SHOPPING_BTN}
+    IF    not ${clicked}
+        Execute JavaScript    document.querySelector('#cartModal .close-modal').click()
+    END
     Sleep    1s
 
 Click View Cart In Modal

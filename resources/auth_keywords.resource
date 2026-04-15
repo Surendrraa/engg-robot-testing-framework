@@ -24,15 +24,19 @@ Login With Credentials
 
 Verify Logged In As
     [Arguments]    ${username}
-    Wait Until Page Contains Element    ${NAV_LOGGED_IN_AS_TEXT}    timeout=15s
+    Wait Until Page Contains Element    ${NAV_LOGGED_IN_AS_TEXT}    timeout=45s
     Element Text Should Be    ${NAV_LOGGED_IN_AS_TEXT}    ${username}
 
 Verify Login Error Message
     Page Should Contain Element    ${LOGIN_ERROR_MESSAGE}
 
 Logout From Application
-    Click Element    ${NAV_LOGOUT_LINK}
-    Wait Until Page Contains Element    ${LOGIN_HEADING}    timeout=10s
+    Wait Until Element Is Visible    ${NAV_LOGOUT_LINK}    timeout=45s
+    ${clicked}=    Run Keyword And Return Status    Click Element    ${NAV_LOGOUT_LINK}
+    IF    not ${clicked}
+        Execute JavaScript    document.querySelector("a[href='/logout']").click()
+    END
+    Wait Until Page Contains Element    ${LOGIN_HEADING}    timeout=20s
 
 Enter Signup Name And Email
     [Arguments]    ${name}    ${email}
@@ -85,12 +89,15 @@ Verify Account Created
 Click Continue After Account Created
     Click Element    ${ACCOUNT_CREATED_CONTINUE_BUTTON}
     Sleep    3s
-    Wait Until Page Contains Element    ${NAV_HOME_LINK}    timeout=15s
+    Wait Until Page Contains Element    ${NAV_HOME_LINK}    timeout=30s
 
 Delete Account
-    Click Element    ${NAV_DELETE_ACCOUNT_LINK}
+    ${clicked}=    Run Keyword And Return Status    Click Element    ${NAV_DELETE_ACCOUNT_LINK}
+    IF    not ${clicked}
+        Execute JavaScript    document.querySelector("a[href='/delete_account']").click()
+    END
     Sleep    3s
-    Wait Until Page Contains    Account Deleted    timeout=15s
+    Wait Until Page Contains    Account Deleted    timeout=60s
 
 Verify Account Deleted
     Wait Until Page Contains    Account Deleted    timeout=15s

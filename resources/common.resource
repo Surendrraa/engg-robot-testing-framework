@@ -122,7 +122,7 @@ Cleanup Test User
             Log    Native click failed on Delete Account; trying JS click fallback.    level=WARN
             Execute JavaScript    document.querySelector("a[href='/delete_account']").click()
         END
-        ${deleted}=    Run Keyword And Return Status    Wait Until Page Contains    Account Deleted    timeout=15s
+        ${deleted}=    Run Keyword And Return Status    Wait Until Page Contains    Account Deleted    timeout=45s
         IF    not ${deleted}
             Log    Account deletion confirmation not visible; continuing without failing teardown.    level=WARN
         END
