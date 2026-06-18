@@ -144,6 +144,109 @@ This creates:
 - 10 contexts inside browser 1 concurrently
 - 10 contexts inside browser 2 concurrently
 
+## Worker Group Approach For Controlled Load
+
+For larger runs, use worker groups. Each worker owns one browser process and a fixed number of contexts.
+
+Recommended model:
+
+```text
+Worker 1 -> Browser 1 -> 10 contexts
+Worker 2 -> Browser 2 -> 10 contexts
+Worker 3 -> Browser 3 -> 10 contexts
+Worker 4 -> Browser 4 -> 10 contexts
+```
+
+Each worker runs independently with `asyncio`, but the full run is still controlled from one Robot keyword.
+
+High-level Python structure:
+
+```python
+async def run_worker(worker_id, contexts_per_worker):
+    browser = await playwright.chromium.launch(headless=True)
+    try:
+        pages = await asyncio.gather(
+            *[
+                open_context_and_page(browser, worker_id, context_id)
+                for context_id in range(1, contexts_per_worker + 1)
+            ]
+        )
+        await asyncio.gather(
+            *[
+                run_ecommerce_actions(page)
+                for page in pages
+            ]
+        )
+    finally:
+        await browser.close()
+
+await asyncio.gather(
+    run_worker(1, 10),
+    run_worker(2, 10),
+    run_worker(3, 10),
+    run_worker(4, 10),
+)
+```
+
+This gives better isolation than putting all contexts in one browser process.
+
+## CPU-Friendly Parallelism
+
+More parallelism can increase CPU usage if every context is active at once. Use throttling when CPU must stay stable.
+
+Recommended controls:
+
+- Prefer `headless=True` for load-style runs.
+- Use a semaphore to limit active work:
+
+```python
+semaphore = asyncio.Semaphore(10)
+
+async def run_context_with_limit(page):
+    async with semaphore:
+        await run_ecommerce_actions(page)
+```
+
+- Open contexts in batches instead of all at once:
+
+```text
+Batch 1: 10 active contexts
+Batch 2: next 10 active contexts
+Batch 3: next 10 active contexts
+```
+
+- Block heavy resources such as images, videos, fonts, and ads:
+
+```python
+async def block_heavy_resources(route):
+    if route.request.resource_type in ["image", "media", "font"]:
+        await route.abort()
+    else:
+        await route.continue_()
+
+await context.route("**/*", block_heavy_resources)
+```
+
+- Reuse browser processes and pages instead of repeatedly closing and reopening them.
+- Add pacing between repeated actions:
+
+```python
+await page.wait_for_timeout(500)
+```
+
+Balanced design:
+
+```text
+4 workers
+4 browser processes
+10 contexts per browser
+only 8-12 contexts active at one time
+heavy resources blocked
+actions paced with small waits
+```
+
+This improves parallelism while reducing CPU spikes.
+
 ## Ecommerce Action Flow
 
 For each context:
