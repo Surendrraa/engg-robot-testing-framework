@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     TC20 - Search Products And Verify Cart After Login
-Library           SeleniumLibrary
+Library           playwright_keyword_library.PlaywrightKeywordLibrary
 Resource          ../../resources/common.resource
 Variables         ../../config/config.py
 Variables         ../../config/test_data.py

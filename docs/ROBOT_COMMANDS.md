@@ -60,14 +60,19 @@ Tags allow you to categorize tests (e.g., `smoke`, `regression`, `slow`).
 
 ---
 
-## 6. Parallel Execution (Multi-threading)
+## 6. Parallel Execution With Playwright
 
-Using the `pabot` library (must be installed: `pip install robotframework-pabot`).
+Use `pabot` to run the existing `.robot` test files in parallel. This keeps execution inside Robot Framework: every test still uses the Robot keywords from `resources/`, and the local Playwright keyword library only replaces the old Selenium browser backend.
+
+This is the correct command when you want all test files to run, not one custom Python flow repeated in multiple browser contexts.
 
 | Command | Description |
 |:---|:---|
-| `pabot --processes 4 --outputdir reports tests/` | Run tests across 4 parallel browser instances |
-| `pabot --testlevelsplit tests/` | Split execution at the test case level (instead of suite level) |
+| `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 pabot --pythonpath . --processes 5 --testlevelsplit --outputdir reports/parallel-playwright --variable HEADLESS:False tests/` | Run all Robot app tests in 5 parallel Playwright browser windows |
+| `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 pabot --pythonpath . --processes 3 --outputdir reports/parallel-playwright tests/auth tests/products tests/cart` | Run selected folders in parallel |
+| `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 robot --outputdir reports/playwright-single tests/navigation/TC07_verify_test_cases_page.robot` | Run one Robot file through Playwright |
+
+Important: Robot Framework does not execute different `.robot` files concurrently inside one shared browser process while still using normal Robot keywords. For real Robot keyword execution, parallelism is handled at the Robot runner level with `pabot`, and each worker owns its own Playwright browser session.
 
 ---
 

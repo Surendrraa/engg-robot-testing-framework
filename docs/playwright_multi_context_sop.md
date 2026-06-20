@@ -144,6 +144,74 @@ This creates:
 - 10 contexts inside browser 1 concurrently
 - 10 contexts inside browser 2 concurrently
 
+## Custom Library Smoke In This Repo
+
+This repo includes a Python custom library for low-level Playwright context validation:
+
+```text
+async_playwright_library/
+  __init__.py
+  async_playwright_library.py
+```
+
+Import it in a Robot file like this:
+
+```robot
+*** Settings ***
+Library    async_playwright_library.AsyncPlaywrightLibrary
+```
+
+Available baseline keywords:
+
+```robot
+${summary}=    Run Async Playwright Context Matrix
+...    browsers=2
+...    contexts_per_browser=10
+...    headless=True
+...    max_active_contexts=8
+...    block_heavy_resources=True
+
+${storage}=    Verify Playwright Context Storage Is Isolated
+...    contexts=3
+...    headless=True
+```
+
+Use `Run Async Playwright Context Matrix` when the requirement is:
+
+```text
+Open N browser processes
+Open M isolated contexts inside each process
+Create those contexts concurrently with asyncio
+Return a Robot-friendly summary dictionary for assertions/logging
+```
+
+Do not use this keyword as the main application test runner. It does not execute the existing feature `.robot` files or their business keywords from `resources/`.
+
+For real application testing, run the existing Robot suites through `pabot`. That keeps the test logic in Robot keywords and uses Playwright only as the browser backend:
+
+```bash
+PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 pabot --pythonpath . --processes 5 --testlevelsplit --outputdir reports/parallel-playwright --variable HEADLESS:False tests/
+```
+
+Example smoke suite:
+
+```text
+examples/custom_library/TC_async_playwright_context_smoke.robot
+```
+
+Optional dependency install:
+
+```bash
+python3 -m pip install -r requirements.txt
+PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 python3 -m playwright install chromium
+```
+
+Run the custom-library smoke suite:
+
+```bash
+PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 python3 -m robot --outputdir reports/custom-library examples/custom_library/TC_async_playwright_context_smoke.robot
+```
+
 ## Worker Group Approach For Controlled Load
 
 For larger runs, use worker groups. Each worker owns one browser process and a fixed number of contexts.
