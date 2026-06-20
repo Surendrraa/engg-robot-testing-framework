@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation    Common locators shared across all pages - navbar, footer, subscription,
 ...              scroll, recommended items, and cart modal.
-Library           SeleniumLibrary
+Library           playwright_keyword_library.PlaywrightKeywordLibrary
 Library           String
 Variables         ../config/config.py
 Variables         ../config/test_data.py
@@ -54,32 +54,20 @@ ${CART_MODAL_CONTINUE_SHOPPING_BTN}     css=#cartModal .close-modal
 
 *** Keywords ***
 Open Browser To Home Page
-    # Normalize HEADLESS so CLI overrides like --variable HEADLESS:False work reliably.
     ${is_headless}=    Evaluate    str(${HEADLESS}).strip().lower() in ["true", "1", "yes", "on"]
-    Log    Starting browser (Headless: ${is_headless}) to: ${BASE_URL}
-    ${chrome_options}=    Evaluate    selenium.webdriver.ChromeOptions()    modules=selenium.webdriver
-    IF    ${is_headless}
-        Evaluate    $chrome_options.add_argument("--headless=new")
-    END
-    Evaluate    $chrome_options.add_argument("--no-sandbox")
-    Evaluate    $chrome_options.add_argument("--disable-dev-shm-usage")
-    Evaluate    $chrome_options.add_argument("--disable-gpu")
-    Evaluate    $chrome_options.add_argument("--window-size=1920,1080")
-    # More stable transport in Linux/WSL headless environments
-    Evaluate    $chrome_options.add_argument("--remote-debugging-pipe")
-    # Additional flags for Linux stability and parallel execution
-    Evaluate    $chrome_options.add_argument("--disable-extensions")
-    # Use incognito to avoid persistent profile locking issues
-    Evaluate    $chrome_options.add_argument("--incognito")
-    Create Webdriver    Chrome    options=${chrome_options}
+    Log    Starting Playwright browser (Headless: ${is_headless}) to: ${BASE_URL}
+    Open Browser    ${BASE_URL}    ${BROWSER}    headless=${is_headless}
     Set Screenshot Directory    ${SCREENSHOT_DIR}
     Register Keyword To Run On Failure    Capture Failure Screenshot
-    Go To    ${BASE_URL}
-    Set Selenium Implicit Wait    ${TIMEOUT}
+    Set Browser Timeout    ${TIMEOUT}
     Title Should Be    Automation Exercise
 
 Close Test Browser
     Register Keyword To Run On Failure    NONE
+    ${is_headless}=    Evaluate    str(${HEADLESS}).strip().lower() in ["true", "1", "yes", "on"]
+    IF    not ${is_headless}
+        Sleep    ${BROWSER_CLOSE_DELAY}s
+    END
     Close Browser
 
 Capture Failure Screenshot

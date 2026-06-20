@@ -1,5 +1,5 @@
 *** Settings ***
-Library           SeleniumLibrary
+Library           playwright_keyword_library.PlaywrightKeywordLibrary
 Resource          ../../resources/subscription_keywords.resource
 Variables         ../../config/config.py
 Variables         ../../config/test_data.py

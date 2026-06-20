@@ -10,11 +10,14 @@ BASE_URL = "https://www.automationexercise.com"
 BROWSER = "chrome"
 
 # Default explicit-wait timeout in seconds
-TIMEOUT = 10
+TIMEOUT = 30
 
 # Run browser in headless mode (True / False)
 # NOTE: Set to True for Linux/CI environments without a display.
-HEADLESS = True
+HEADLESS = False
+
+# Seconds to keep the headed browser visible before teardown closes it.
+BROWSER_CLOSE_DELAY = 10
 
 # Implicit wait in seconds (0 = disabled; explicit waits are preferred)
 IMPLICIT_WAIT = 0
