@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.2.2 (Python 3.11.18 on linux)" generated="2026-11-06T07:10:18.783485" rpa="false" schemaversion="5">
+<suite id="s1" name="Suites">
+<suite id="s1-s1" name="Auth" source="/home/runner/work/engg-robot-testing-framework/engg-robot-testing-framework/tests/auth">
+<suite id="s1-s1-s1" name="TC04 logout user" source="/home/runner/work/engg-robot-testing-framework/engg-robot-testing-framework/tests/auth/TC04_logout_user.robot">
+<test id="s1-s1-s1-t1" name="TC04 Logout User" line="11">
+<kw name="Open Browser To Home Page" owner="common" type="SETUP">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-11-06T07:10:18.826602" level="INFO">${is_headless} = False</msg>
+<var>${is_headless}</var>
+<arg>str(${HEADLESS}).strip().lower() in ["true", "1", "yes", "on"]</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.826355" elapsed="0.000280"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-11-06T07:10:18.826978" level="INFO">Starting Playwright browser (Headless: False) to: https://www.automationexercise.com</msg>
+<arg>Starting Playwright browser (Headless: ${is_headless}) to: ${BASE_URL}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.826743" elapsed="0.000298"/>
+</kw>
+<kw name="Open Browser">
+<msg time="2026-11-06T07:10:18.828197" level="FAIL">No keyword with name 'Open Browser' found.</msg>
+<arg>${BASE_URL}</arg>
+<arg>${BROWSER}</arg>
+<arg>headless=${is_headless}</arg>
+<status status="FAIL" start="2026-11-06T07:10:18.828166" elapsed="0.000073">No keyword with name 'Open Browser' found.</status>
+</kw>
+<kw name="Set Screenshot Directory">
+<arg>${SCREENSHOT_DIR}</arg>
+<status status="NOT RUN" start="2026-11-06T07:10:18.828359" elapsed="0.000018"/>
+</kw>
+<kw name="Register Keyword To Run On Failure">
+<arg>Capture Failure Screenshot</arg>
+<status status="NOT RUN" start="2026-11-06T07:10:18.828461" elapsed="0.000017"/>
+</kw>
+<kw name="Set Browser Timeout">
+<arg>${TIMEOUT}</arg>
+<status status="NOT RUN" start="2026-11-06T07:10:18.828558" elapsed="0.000016"/>
+</kw>
+<kw name="Title Should Be">
+<arg>Automation Exercise</arg>
+<status status="NOT RUN" start="2026-11-06T07:10:18.828670" elapsed="0.000021"/>
+</kw>
+<status status="FAIL" start="2026-11-06T07:10:18.825929" elapsed="0.002883">No keyword with name 'Open Browser' found.</status>
+</kw>
+<kw name="Run Keywords" owner="BuiltIn" type="TEARDOWN">
+<kw name="Cleanup Test User" owner="common">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Page Should Contain Element">
+<msg time="2026-11-06T07:10:18.830417" level="FAIL">No keyword with name 'Page Should Contain Element' found.</msg>
+<arg>${NAV_DELETE_ACCOUNT_LINK}</arg>
+<status status="FAIL" start="2026-11-06T07:10:18.830393" elapsed="0.000059">No keyword with name 'Page Should Contain Element' found.</status>
+</kw>
+<msg time="2026-11-06T07:10:18.830522" level="INFO">${status} = False</msg>
+<var>${status}</var>
+<arg>Page Should Contain Element</arg>
+<arg>${NAV_DELETE_ACCOUNT_LINK}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.829484" elapsed="0.001057"/>
+</kw>
+<if>
+<branch type="IF" condition="${status}">
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<var>${clicked}</var>
+<arg>Click Element</arg>
+<arg>${NAV_DELETE_ACCOUNT_LINK}</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="NOT RUN" start="2026-11-06T07:10:18.830734" elapsed="0.000027"/>
+</kw>
+<if>
+<branch type="IF" condition="not ${clicked}">
+<kw name="Log" owner="BuiltIn">
+<arg>Native click failed on Delete Account; trying JS click fallback.</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-11-06T07:10:18.830931" elapsed="0.000019"/>
+</kw>
+<kw name="Execute JavaScript">
+<arg>document.querySelector("a[href='/delete_account']").click()</arg>
+<status status="NOT RUN" start="2026-11-06T07:10:18.831033" elapsed="0.000014"/>
+</kw>
+<status status="NOT RUN" start="2026-11-06T07:10:18.830858" elapsed="0.000210"/>
+</branch>
+<status status="NOT RUN" start="2026-11-06T07:10:18.830841" elapsed="0.000247"/>
+</if>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<var>${deleted}</var>
+<arg>Wait Until Page Contains</arg>
+<arg>Account Deleted</arg>
+<arg>timeout=45s</arg>
+<doc>Runs the given keyword with given arguments and returns the status as a Boolean value.</doc>
+<status status="NOT RUN" start="2026-11-06T07:10:18.831160" elapsed="0.000014"/>
+</kw>
+<if>
+<branch type="IF" condition="not ${deleted}">
+<kw name="Log" owner="BuiltIn">
+<arg>Account deletion confirmation not visible; continuing without failing teardown.</arg>
+<arg>level=WARN</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-11-06T07:10:18.831296" elapsed="0.000014"/>
+</kw>
+<status status="NOT RUN" start="2026-11-06T07:10:18.831226" elapsed="0.000109"/>
+</branch>
+<status status="NOT RUN" start="2026-11-06T07:10:18.831212" elapsed="0.000139"/>
+</if>
+<status status="NOT RUN" start="2026-11-06T07:10:18.830610" elapsed="0.000757"/>
+</branch>
+<branch type="ELSE">
+<kw name="Log" owner="BuiltIn">
+<arg>Delete Account link not found, skipping cleanup.</arg>
+<arg>level=DEBUG</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.831449" elapsed="0.000128"/>
+</kw>
+<status status="PASS" start="2026-11-06T07:10:18.831383" elapsed="0.000221"/>
+</branch>
+<status status="PASS" start="2026-11-06T07:10:18.830589" elapsed="0.001032"/>
+</if>
+<doc>Deletes the current account if logged in.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.829276" elapsed="0.002383"/>
+</kw>
+<kw name="Close Test Browser" owner="common">
+<kw name="Register Keyword To Run On Failure">
+<msg time="2026-11-06T07:10:18.832706" level="FAIL">No keyword with name 'Register Keyword To Run On Failure' found.</msg>
+<arg>NONE</arg>
+<status status="FAIL" start="2026-11-06T07:10:18.832685" elapsed="0.000050">No keyword with name 'Register Keyword To Run On Failure' found.</status>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-11-06T07:10:18.833079" level="INFO">${is_headless} = False</msg>
+<var>${is_headless}</var>
+<arg>str(${HEADLESS}).strip().lower() in ["true", "1", "yes", "on"]</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.832861" elapsed="0.000241"/>
+</kw>
+<if>
+<branch type="IF" condition="not ${is_headless}">
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2026-11-06T07:10:28.833545" level="INFO">Slept 10 seconds.</msg>
+<arg>${BROWSER_CLOSE_DELAY}s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2026-11-06T07:10:18.833282" elapsed="10.000374"/>
+</kw>
+<status status="PASS" start="2026-11-06T07:10:18.833158" elapsed="10.000542"/>
+</branch>
+<status status="PASS" start="2026-11-06T07:10:18.833143" elapsed="10.000589"/>
+</if>
+<kw name="Close Browser">
+<msg time="2026-11-06T07:10:28.834589" level="FAIL">No keyword with name 'Close Browser' found. Did you mean:
+    common.Close Test Browser</msg>
+<status status="FAIL" start="2026-11-06T07:10:28.834558" elapsed="0.000070">No keyword with name 'Close Browser' found. Did you mean:
+    common.Close Test Browser</status>
+</kw>
+<status status="FAIL" start="2026-11-06T07:10:18.831827" elapsed="10.002933">Several failures occurred:
+
+1) No keyword with name 'Register Keyword To Run On Failure' found.
+
+2) No keyword with name 'Close Browser' found. Did you mean:
+    common.Close Test Browser</status>
+</kw>
+<arg>Cleanup Test User</arg>
+<arg>AND</arg>
+<arg>Close Test Browser</arg>
+<doc>Executes all the given keywords in a sequence.</doc>
+<status status="FAIL" start="2026-11-06T07:10:18.828992" elapsed="10.005870">Several failures occurred:
+
+1) No keyword with name 'Register Keyword To Run On Failure' found.
+
+2) No keyword with name 'Close Browser' found. Did you mean:
+    common.Close Test Browser</status>
+</kw>
+<status status="FAIL" start="2026-11-06T07:10:18.825317" elapsed="10.009669">Setup failed:
+No keyword with name 'Open Browser' found.
+
+Also teardown failed:
+Several failures occurred:
+
+1) No keyword with name 'Register Keyword To Run On Failure' found.
+
+2) No keyword with name 'Close Browser' found. Did you mean:
+    common.Close Test Browser</status>
+</test>
+<status status="FAIL" start="2026-11-06T07:10:18.806953" elapsed="10.028516"/>
+</suite>
+<status status="FAIL" start="2026-11-06T07:10:18.806102" elapsed="10.029878"/>
+</suite>
+<status status="FAIL" start="2026-11-06T07:10:18.784191" elapsed="10.052199"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Suites" id="s1" pass="0" fail="1" skip="0">Suites</stat>
+<stat name="Auth" id="s1-s1" pass="0" fail="1" skip="0">Suites.Auth</stat>
+<stat name="TC04 logout user" id="s1-s1-s1" pass="0" fail="1" skip="0">Suites.Auth.TC04 logout user</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2026-11-06T07:10:18.807999" level="ERROR">Error in file '/home/runner/work/engg-robot-testing-framework/engg-robot-testing-framework/tests/auth/TC04_logout_user.robot' on line 2: Importing library 'playwright_keyword_library.PlaywrightKeywordLibrary' failed: ModuleNotFoundError: No module named 'playwright_keyword_library'
+Traceback (most recent call last):
+  None
+PYTHONPATH:
+  /opt/hostedtoolcache/Python/3.11.18/x64/bin
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python311.zip
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/lib-dynload
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages</msg>
+<msg time="2026-11-06T07:10:18.813382" level="ERROR">Error in file '/home/runner/work/engg-robot-testing-framework/engg-robot-testing-framework/resources/auth_keywords.resource' on line 2: Importing library 'playwright_keyword_library.PlaywrightKeywordLibrary' failed: ModuleNotFoundError: No module named 'playwright_keyword_library'
+Traceback (most recent call last):
+  None
+PYTHONPATH:
+  /opt/hostedtoolcache/Python/3.11.18/x64/bin
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python311.zip
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/lib-dynload
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages</msg>
+<msg time="2026-11-06T07:10:18.820593" level="ERROR">Error in file '/home/runner/work/engg-robot-testing-framework/engg-robot-testing-framework/resources/common.resource' on line 4: Importing library 'playwright_keyword_library.PlaywrightKeywordLibrary' failed: ModuleNotFoundError: No module named 'playwright_keyword_library'
+Traceback (most recent call last):
+  None
+PYTHONPATH:
+  /opt/hostedtoolcache/Python/3.11.18/x64/bin
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python311.zip
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/lib-dynload
+  /opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages</msg>
+</errors>
+</robot>
